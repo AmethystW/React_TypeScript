@@ -1,0 +1,156 @@
+import React from 'react';
+
+interface Istate{
+    videoid:number
+    position:number
+    width:number
+}
+
+
+export default class VideoBox extends React.Component<any,Istate>{
+    public constructor(props:any) {
+      super(props);
+      this.clickHandler = this.clickHandler.bind(this);
+      this.loopPLAY = this.loopPLAY.bind(this);
+      this.clickLeft = this.clickLeft.bind(this);
+      this.clickRight = this.clickRight.bind(this);
+    }
+
+    public state:Readonly<Istate>={
+        videoid:1,
+        position:0,
+        width:document.body.clientWidth
+    }
+    
+    public clickHandler(){
+        var file = (document.getElementById("videofile") as HTMLInputElement).files
+        if(file !== null && file.length !== 0){
+            for(var i=1;i<=file.length;i++){
+                var id="videoplay"+i
+                var video = document.getElementById(id) as HTMLVideoElement
+                var src = window.URL.createObjectURL(file[i-1])
+                console.log(file[i-1])
+                video.src = src
+            }
+        }
+        else{
+            alert("无上传文件")
+        }
+    }
+
+    public loopPLAY(){
+        var videoid = "videoplay"+(this.state.videoid+1)
+        var video = document.getElementById(videoid) as HTMLVideoElement
+        if (this.state.videoid<3){
+            this.setState({
+                videoid:this.state.videoid+1
+            })
+            console.log(this.state.videoid)
+            video.load()
+            video.play()
+        }
+    }
+
+    public clickLeft(){
+        var id:number
+        var ulist = document.getElementById("videobox") as HTMLUListElement
+        if(this.state.position!==0){
+            var mov=this.state.position-this.state.width
+            this.setState({
+                position:mov
+            })
+            ulist.scrollTo(mov,0)
+            if(mov===0){
+                id=1
+            }
+            else if(mov===this.state.width){
+                id=2
+            }
+            else{
+                id=3
+            }
+            var file = (document.getElementById("videofile") as HTMLInputElement).files
+            if(file !== null && file.length !== 0){
+                for(var i=1;i<4;i++){
+                    var videoid = "videoplay"+i
+                    var video = document.getElementById(videoid) as HTMLVideoElement
+                    if(id===i){
+                        video.play()
+                    }
+                    else{
+                        video.pause()
+                    }
+                }
+            }
+        }
+    }
+    public clickRight(){
+        var ulist = document.getElementById("videobox") as HTMLUListElement
+        if(this.state.position!==this.state.width*2){
+            var id:number
+            var mov=this.state.position+this.state.width
+            this.setState({
+                position:mov
+            })
+            ulist.scrollTo(mov,0)
+            if(mov===0){
+                id=1
+            }
+            else if(mov===this.state.width){
+                id=2
+            }
+            else{
+                id=3
+            }
+            var file = (document.getElementById("videofile") as HTMLInputElement).files
+            if(file !== null && file.length !== 0){
+                for(var i=1;i<4;i++){
+                    var videoid = "videoplay"+i
+                    var video = document.getElementById(videoid) as HTMLVideoElement
+                    if(id===i){
+                        video.play()
+                    }
+                    else{
+                        video.pause()
+                    }
+                }
+            }
+        }
+    }
+
+    public render() {
+      return (
+        <div>
+            <div>
+                {/* 读取本地文件并播放 */}
+                <p>请在下方选择本地视频：</p>
+                <input id="videofile" type="file" multiple/>
+                <input type="button" id="btplay" onClick={this.clickHandler} value="播放"/>    
+            </div>
+            <div>
+                <ul id="videobox" style={{marginLeft:"0",overflowX:"auto", listStyle:"none", width:"100%", whiteSpace:"nowrap", position:"absolute"}}>
+                    <li id="videobox1" style={{marginLeft:"0",display:"inline-block",marginRight:"10px", width:this.state.width-60}}> 
+                        <video controls autoPlay id="videoplay1" width={"100%"} onEnded={this.loopPLAY}>
+                            <source type="audio/mpeg"/>
+                        </video>
+                    </li>
+                    <li id="videobox2" style={{display:"inline-block", marginLeft:"10px" ,marginRight:"10px", width:this.state.width-60}}>
+                        <video controls id="videoplay2" width={"100%"} onEnded={this.loopPLAY}>
+                            <source type="audio/mpeg"/>
+                        </video>
+                    </li>
+                    <li id="videobox3" style={{display:"inline-block",marginLeft:"10px" ,marginRight:"10px", width:this.state.width-60}}>
+                        <video controls id="videoplay3" width={"100%"} onEnded={this.loopPLAY}>
+                            <source type="audio/mpeg"/>
+                        </video>
+                    </li>
+                </ul>
+                <div style={{position:"relative", width:"100%"}}>
+                    <button onClick={this.clickLeft} style={{position:"absolute", left:"0px", top:"150px", width:"20px",height:"40px",borderStyle:"none"}}>◀</button>
+                    <button onClick={this.clickRight} style={{position:"absolute", right:"0px", top:"150px", width:"20px",height:"40px",borderStyle:"none"}}>▶</button>
+                </div>
+            </div>
+        </div>
+      );
+    }
+  }
